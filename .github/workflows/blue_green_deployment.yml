@@ -83,6 +83,7 @@ jobs:
           ENVIRONMENT: stage
   prod-deployment:
     name: Blue-Green Deploy to Prod
+    needs: selections
     runs-on: ubuntu-latest
     environment: prod
     if: ${{ needs.selections.outputs.environment == 'prod' }} && github.ref == 'refs/heads/production'
