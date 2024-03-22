@@ -38,8 +38,13 @@ jobs:
       weighted_traffic_percentage: ${{ github.event.inputs.weighted_traffic_percentage }}
       environment: ${{ github.event.inputs.environment }}
     steps:
-      - name: Echo Selected Color
-        run: echo "You have selected  ${{ github.event.inputs.environment }} !"
+      - name: Echo Inputs
+        run: |
+          echo "Inputs  lambda_function_name ${{ github.event.inputs.lambda_function_name }} \
+          prev_lambda_function_version ${{ github.event.inputs.prev_lambda_function_version }} \
+          lambda_function_version ${{ github.event.inputs.lambda_function_version }} \
+          weighted_traffic_percentage ${{ github.event.inputs.weighted_traffic_percentage }} \"
+          environment ${{ github.event.inputs.environment }} "
 
   dev-deployment:
     name: Blue-Green Deploy to Dev
