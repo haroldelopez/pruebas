@@ -5,7 +5,7 @@ on:
     branches:
       - development
       - staging
-      - production
+      - master
   workflow_dispatch:
     inputs:
       lambda_function_name:
