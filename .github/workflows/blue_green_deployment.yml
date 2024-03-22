@@ -1,11 +1,6 @@
 name: Blue-Green Deployment
 
 on:
-  push:
-    branches:
-      - development
-      - staging
-      - master
   workflow_dispatch:
     inputs:
       lambda_function_name:
@@ -34,60 +29,22 @@ permissions:
 env:
   NODE_VERSION: "20.x"
 jobs:
-  dev-deployment:
-    name: Blue-Green Deploy to Dev
+  selections:
     runs-on: ubuntu-latest
-    environment: dev
-    if: github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
+    outputs:
+      lambda_function_name: ${{ github.event.inputs.lambda_function_name }}
+      prev_lambda_function_version: ${{ github.event.inputs.prev_lambda_function_version }}
+      lambda_function_version: ${{ github.event.inputs.lambda_function_version }}
+      weighted_traffic_percentage: ${{ github.event.inputs.weighted_traffic_percentage }}
+      environment: ${{ github.event.inputs.environment }}
     steps:
-      - uses: actions/checkout@v2
-      - name: "Deploy"
-        uses: ./.github/action/action_blue_green
-        with:
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          LAMBDA_FUNCTION_NAME: ${{ inputs.lambda_function_name }}
-          PREV_LAMBDA_FUNCTION_VERSION: ${{ inputs.prev_lambda_function_version }}
-          LAMBDA_FUNCTION_VERSION: ${{ inputs.lambda_function_version }}
-          ALIAS_NAME: dev
-          WEIGHTED_TRAFFIC_PCT: ${{ inputs.weighted_traffic_percentage }}
-          NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: dev
-  stage-deployment:
-    name: Blue-Green Deploy to Stage
+      - name: Echo Selected Color
+        run: echo "You have selected  ${{ github.event.inputs.environment }} !"
+
+  execute-dev-environment:
+    needs: selections
     runs-on: ubuntu-latest
-    environment: stage
-    if: github.ref == 'refs/heads/staging'
     steps:
-      - uses: actions/checkout@v2
-      - name: "Deploy"
-        uses: ./.github/action/action_blue_green
-        with:
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          LAMBDA_FUNCTION_NAME: ${{ inputs.lambda_function_name }}
-          PREV_LAMBDA_FUNCTION_VERSION: ${{ inputs.prev_lambda_function_version }}
-          LAMBDA_FUNCTION_VERSION: ${{ inputs.lambda_function_version }}
-          ALIAS_NAME: stage
-          WEIGHTED_TRAFFIC_PCT: ${{ inputs.weighted_traffic_percentage }}
-          NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: stage
-  prod-deployment:
-    name: Blue-Green Deploy to Prod
-    runs-on: ubuntu-latest
-    environment: prod
-    if: github.ref == 'refs/heads/production'
-    steps:
-      - uses: actions/checkout@v2
-      - name: "Deploy"
-        uses: ./.github/action/action_blue_green
-        with:
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          LAMBDA_FUNCTION_NAME: ${{ inputs.lambda_function_name }}
-          PREV_LAMBDA_FUNCTION_VERSION: ${{ inputs.prev_lambda_function_version }}
-          LAMBDA_FUNCTION_VERSION: ${{ inputs.lambda_function_version }}
-          ALIAS_NAME: prod
-          WEIGHTED_TRAFFIC_PCT: ${{ inputs.weighted_traffic_percentage }}
-          NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: prod
+      - name: Execute Steps dev environment
+        run: echo "Executing steps ${{ needs.selection.outputs.environment}}"
+        
