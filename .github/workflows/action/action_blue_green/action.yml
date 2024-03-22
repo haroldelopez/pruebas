@@ -1,0 +1,39 @@
+inputs:
+  ENVIRONMENT:
+    description: "Name of environment"
+    required: true
+  AWS_REGION:
+    description: "AWS Region to deploy to"
+    required: true
+  AWS_ROLE_ARN:
+    description: "AWS Role ARN that Github will use to connect to AWS"
+    required: true
+  LAMBDA_FUNCTION_NAME:
+    description: "Lambda function to apply the deployment strategy to"
+    required: true
+  PREV_LAMBDA_FUNCTION_VERSION:
+    description: "Previous Lambda function version to update the alias"
+    required: true
+  LAMBDA_FUNCTION_VERSION:
+    description: "Lambda function version to update the alias"
+    required: true
+  ALIAS_NAME:
+    description: "Alias name to be updated with the deployment strategy"
+    required: true
+  WEIGHTED_TRAFFIC_PCT:
+    description: "The weighted traffic amount (in decimal) to be updated with the deployment strategy"
+    required: true
+  NODE_VERSION:
+    description: "Version of NodeJS to use"
+runs:
+    using: composite
+    steps:
+    - name: Use Node.js ${{ inputs.NODE_VERSION }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ inputs.NODE_VERSION }}
+    - name: Update alias and route traffic for ${{ inputs.ENVIRONMENT }}
+      shell: bash
+      run:  |
+        node --version
+        echo "Hello World"
