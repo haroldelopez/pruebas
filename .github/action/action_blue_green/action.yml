@@ -32,8 +32,14 @@ runs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ inputs.NODE_VERSION }}
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@master
+      with:
+        aws-region: ${{ inputs.AWS_REGION }}
+        role-to-assume: ${{ inputs.AWS_ROLE_ARN }}
     - name: Update alias and route traffic for ${{ inputs.ENVIRONMENT }}
       shell: bash
       run:  |
         node --version
         echo "Hello World"
+        aws lambda update-alias --name ${{ inputs.ENVIRONMENT }} --function-name ${{ inputs.LAMBDA_FUNCTION_NAME }} --function-version ${{ inputs.LAMBDA_FUNCTION_VERSION }} --routing-config AdditionalVersionWeights={${{ inputs.PREV_LAMBDA_FUNCTION_VERSION }}: {${{ inputs.WEIGHTED_TRAFFIC_PCT }}}
