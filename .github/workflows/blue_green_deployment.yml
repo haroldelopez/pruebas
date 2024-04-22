@@ -3,22 +3,19 @@ name: Blue-Green Deployment
 on:
   workflow_dispatch:
     inputs:
-      lambda_function_name:
-        description: "Lambda function to apply the deployment strategy to"
-        type: string
+      which_infrastructure:
+        description: "Select the infrastructure to which this deploy will be sent. A: Bottlers B: Sellers"
         required: true
-      prev_lambda_function_version:
-        description: "Previous Lambda function version to update the alias"
+        default: "A"
+        type: choice
+        options:
+          - A
+          - B
+      become_active:
+        description: "Should infrastructure selected above become active?"
         required: true
-        type: string
-      lambda_function_version:
-        description: "Lambda function version to update the alias"
-        required: true
-        type: string
-      weighted_traffic_percentage:
-        description: "The weighted traffic amount (in decimal) to be updated with the deployment strategy"
-        type: string
-        required: true
+        type: boolean
+        default: false
       environment:
         description: "Environment to run deploy against"
         type: environment
@@ -32,26 +29,22 @@ jobs:
   selections:
     runs-on: ubuntu-latest
     outputs:
-      lambda_function_name: ${{ github.event.inputs.lambda_function_name }}
-      prev_lambda_function_version: ${{ github.event.inputs.prev_lambda_function_version }}
-      lambda_function_version: ${{ github.event.inputs.lambda_function_version }}
-      weighted_traffic_percentage: ${{ github.event.inputs.weighted_traffic_percentage }}
+      which_infrastructure: ${{ github.event.inputs.which_infrastructure }}
+      become_active: ${{ github.event.inputs.become_active }}
       environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Echo Inputs
         run: |
-          echo "Inputs  lambda_function_name ${{ github.event.inputs.lambda_function_name }} \
-          prev_lambda_function_version ${{ github.event.inputs.prev_lambda_function_version }} \
-          lambda_function_version ${{ github.event.inputs.lambda_function_version }} \
-          weighted_traffic_percentage ${{ github.event.inputs.weighted_traffic_percentage }} \"
+          echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
+          become_active ${{ github.event.inputs.become_active }} \
           environment ${{ github.event.inputs.environment }} "
 
-  dev-deployment:
-    name: Blue-Green Deploy to Dev
+  dev-deployment-A:
+    name: Blue-Green Deploy to Dev A infrastructure
     needs: selections
     runs-on: ubuntu-latest
     environment: dev
-    if: ${{ needs.selections.outputs.environment == 'dev' }} && github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
+    if: ${{ needs.selections.outputs.environment == 'dev' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} && github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - uses: actions/checkout@v2
       - name: "Deploy"
@@ -59,19 +52,45 @@ jobs:
         with:
           AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          LAMBDA_FUNCTION_NAME: ${{ inputs.lambda_function_name }}
-          PREV_LAMBDA_FUNCTION_VERSION: ${{ inputs.prev_lambda_function_version }}
-          LAMBDA_FUNCTION_VERSION: ${{ inputs.lambda_function_version }}
-          ALIAS_NAME: dev
-          WEIGHTED_TRAFFIC_PCT: ${{ inputs.weighted_traffic_percentage }}
+          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
+          BECOME_ACTIVE: ${{ inputs.become_active }}
+          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
+          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_DEV_INFRA }}
+          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_DEV }}
+          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
           ENVIRONMENT: dev
-  stage-deployment:
-    name: Blue-Green Deploy to Stage
+
+  dev-deployment-B:
+    name: Blue-Green Deploy to Dev B infrastructure
+    needs: selections
+    runs-on: ubuntu-latest
+    environment: dev
+    if: ${{ needs.selections.outputs.environment == 'dev' }} && ${{ needs.selections.outputs.which_infrastructure == 'B' }} && github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Deploy"
+        uses: ./.github/action/action_blue_green
+        with:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
+          BECOME_ACTIVE: ${{ inputs.become_active }}
+          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
+          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_DEV_INFRA }}
+          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_DEV }}
+          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
+          NODE_VERSION: ${{ env.NODE_VERSION }}
+          ENVIRONMENT: dev
+
+  stage-deployment-A:
+    name: Blue-Green Deploy to Stage A infrastructure
     needs: selections
     runs-on: ubuntu-latest
     environment: stage
-    if: ${{ needs.selections.outputs.environment == 'stage' }} && github.ref == 'refs/heads/staging'
+    if: ${{ needs.selections.outputs.environment == 'stage' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} && github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - uses: actions/checkout@v2
       - name: "Deploy"
@@ -79,19 +98,45 @@ jobs:
         with:
           AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          LAMBDA_FUNCTION_NAME: ${{ inputs.lambda_function_name }}
-          PREV_LAMBDA_FUNCTION_VERSION: ${{ inputs.prev_lambda_function_version }}
-          LAMBDA_FUNCTION_VERSION: ${{ inputs.lambda_function_version }}
-          ALIAS_NAME: stage
-          WEIGHTED_TRAFFIC_PCT: ${{ inputs.weighted_traffic_percentage }}
+          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
+          BECOME_ACTIVE: ${{ inputs.become_active }}
+          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
+          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_STAGE_INFRA }}
+          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
+          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
           ENVIRONMENT: stage
-  prod-deployment:
-    name: Blue-Green Deploy to Prod
+
+  stage-deployment-B:
+    name: Blue-Green Deploy to Stage B infrastructure
+    needs: selections
+    runs-on: ubuntu-latest
+    environment: stage
+    if: ${{ needs.selections.outputs.environment == 'stage' }} && ${{ needs.selections.outputs.which_infrastructure == 'B' }} && github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Deploy"
+        uses: ./.github/action/action_blue_green
+        with:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
+          BECOME_ACTIVE: ${{ inputs.become_active }}
+          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
+          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_STAGE_INFRA }}
+          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
+          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
+          NODE_VERSION: ${{ env.NODE_VERSION }}
+          ENVIRONMENT: stage
+
+  prod-deployment-A:
+    name: Blue-Green Deploy to Prod A infrastructure
     needs: selections
     runs-on: ubuntu-latest
     environment: prod
-    if: ${{ needs.selections.outputs.environment == 'prod' }} && github.ref == 'refs/heads/production'
+    if: ${{ needs.selections.outputs.environment == 'prod' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} && github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/')
     steps:
       - uses: actions/checkout@v2
       - name: "Deploy"
@@ -99,13 +144,35 @@ jobs:
         with:
           AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          LAMBDA_FUNCTION_NAME: ${{ inputs.lambda_function_name }}
-          PREV_LAMBDA_FUNCTION_VERSION: ${{ inputs.prev_lambda_function_version }}
-          LAMBDA_FUNCTION_VERSION: ${{ inputs.lambda_function_version }}
-          ALIAS_NAME: prod
-          WEIGHTED_TRAFFIC_PCT: ${{ inputs.weighted_traffic_percentage }}
+          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
+          BECOME_ACTIVE: ${{ inputs.become_active }}
+          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
+          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_PROD_INFRA }}
+          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
+          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
           ENVIRONMENT: prod
 
-
-        
+  prod-deployment-B:
+    name: Blue-Green Deploy to Prod B infrastructure
+    needs: selections
+    runs-on: ubuntu-latest
+    environment: prod
+    if: ${{ needs.selections.outputs.environment == 'prod' }} && ${{ needs.selections.outputs.which_infrastructure == 'B' }} && github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/')
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Deploy"
+        uses: ./.github/action/action_blue_green
+        with:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
+          BECOME_ACTIVE: ${{ inputs.become_active }}
+          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
+          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_PROD_INFRA }}
+          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
+          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
+          NODE_VERSION: ${{ env.NODE_VERSION }}
+          ENVIRONMENT: prod
