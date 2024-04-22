@@ -54,8 +54,6 @@ jobs:
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
           WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
           BECOME_ACTIVE: ${{ inputs.become_active }}
-          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
           SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_DEV_INFRA }}
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_DEV }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
@@ -77,8 +75,6 @@ jobs:
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
           WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
           BECOME_ACTIVE: ${{ inputs.become_active }}
-          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
           SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_DEV_INFRA }}
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_DEV }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
@@ -100,8 +96,6 @@ jobs:
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
           WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
           BECOME_ACTIVE: ${{ inputs.become_active }}
-          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
           SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_STAGE_INFRA }}
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
@@ -123,8 +117,6 @@ jobs:
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
           WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
           BECOME_ACTIVE: ${{ inputs.become_active }}
-          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
           SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_STAGE_INFRA }}
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
@@ -146,8 +138,6 @@ jobs:
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
           WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
           BECOME_ACTIVE: ${{ inputs.become_active }}
-          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
           SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_PROD_INFRA }}
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
@@ -169,8 +159,6 @@ jobs:
           AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
           WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
           BECOME_ACTIVE: ${{ inputs.become_active }}
-          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-          MAGENTO_BEARER_TOKEN: ${{ secrets.MAGENTO_BEARER_TOKEN }}
           SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_PROD_INFRA }}
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
