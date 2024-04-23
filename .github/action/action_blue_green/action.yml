@@ -42,3 +42,4 @@ runs:
       run:  |
         node --version
         echo "Hello World"
+        echo "values are region: ${{ inputs.AWS_REGION }}, which_infrastructure: ${{ inputs.WHICH_INFRASTRUCTURE }}, become_active: ${{ inputs.BECOME_ACTIVE }}, SSM_PARAM_INFRASTRUCTURE: ${{ inputs.SSM_PARAM_INFRASTRUCTURE }}, SELLERS_DOMAIN_NAME: ${{ inputs.SELLERS_DOMAIN_NAME }}, BASE_PATH: ${{ inputs.BASE_PATH }}, ENVIRONMENT: ${{ inputs.ENVIRONMENT }}"
