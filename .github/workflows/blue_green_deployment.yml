@@ -44,7 +44,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: dev
-    if: ( ${{ needs.selections.outputs.environment == 'dev' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} ) && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
+    if: ( ${{ needs.selections.outputs.environment == 'dev'  && needs.selections.outputs.which_infrastructure == 'A' }} ) && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
     steps:
       - uses: actions/checkout@v2
       - name: "Deploy"
@@ -65,7 +65,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: dev
-    if: ( ${{ needs.selections.outputs.environment == 'dev' }} && ${{ needs.selections.outputs.which_infrastructure == 'B' }} ) && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
+    if: ( ${{ needs.selections.outputs.environment == 'dev' &&  needs.selections.outputs.which_infrastructure == 'B' }} ) && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
     steps:
       - uses: actions/checkout@v2
       - name: "Deploy"
