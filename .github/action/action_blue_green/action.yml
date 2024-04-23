@@ -8,19 +8,19 @@ inputs:
   AWS_ROLE_ARN:
     description: "AWS Role ARN that Github will use to connect to AWS"
     required: true
-  LAMBDA_FUNCTION_NAME:
+  WHICH_INFRASTRUCTURE:
     description: "Lambda function to apply the deployment strategy to"
     required: true
-  PREV_LAMBDA_FUNCTION_VERSION:
+  BECOME_ACTIVE:
     description: "Previous Lambda function version to update the alias"
     required: true
-  LAMBDA_FUNCTION_VERSION:
+  SSM_PARAM_INFRASTRUCTURE:
     description: "Lambda function version to update the alias"
     required: true
-  ALIAS_NAME:
+  SELLERS_DOMAIN_NAME:
     description: "Alias name to be updated with the deployment strategy"
     required: true
-  WEIGHTED_TRAFFIC_PCT:
+  BASE_PATH:
     description: "The weighted traffic amount (in decimal) to be updated with the deployment strategy"
     required: true
   NODE_VERSION:
@@ -42,4 +42,3 @@ runs:
       run:  |
         node --version
         echo "Hello World"
-        aws lambda update-alias --name ${{ inputs.ENVIRONMENT }} --function-name ${{ inputs.LAMBDA_FUNCTION_NAME }} --function-version ${{ inputs.LAMBDA_FUNCTION_VERSION }} --routing-config AdditionalVersionWeights={${{ inputs.PREV_LAMBDA_FUNCTION_VERSION }}: {${{ inputs.WEIGHTED_TRAFFIC_PCT }}}
