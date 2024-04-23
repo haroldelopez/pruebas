@@ -39,33 +39,12 @@ jobs:
           become_active ${{ github.event.inputs.become_active }} \
           environment ${{ github.event.inputs.environment }} "
 
-  dev-deployment-A:
-    name: Blue-Green Deploy to Dev A infrastructure
+  dev-deployment:
+    name: Blue-Green Deploy to Dev infrastructure
     needs: selections
     runs-on: ubuntu-latest
     environment: dev
-    if: ( ${{ needs.selections.outputs.environment == 'dev'  && needs.selections.outputs.which_infrastructure == 'A' }} ) && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
-    steps:
-      - uses: actions/checkout@v2
-      - name: "Deploy"
-        uses: ./.github/action/action_blue_green
-        with:
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
-          BECOME_ACTIVE: ${{ inputs.become_active }}
-          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_DEV_INFRA }}
-          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_DEV }}
-          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
-          NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: dev
-
-  dev-deployment-B:
-    name: Blue-Green Deploy to Dev B infrastructure
-    needs: selections
-    runs-on: ubuntu-latest
-    environment: dev
-    if: ( ${{ needs.selections.outputs.environment == 'dev' &&  needs.selections.outputs.which_infrastructure == 'B' }} ) && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
+    if: ${{ needs.selections.outputs.environment == 'dev' }} && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
     steps:
       - uses: actions/checkout@v2
       - name: "Deploy"

@@ -38,3 +38,12 @@ runs:
         node --version
         echo "Hello World"
         echo "values are region: ${{ inputs.AWS_REGION }}, which_infrastructure: ${{ inputs.WHICH_INFRASTRUCTURE }}, become_active: ${{ inputs.BECOME_ACTIVE }}, SSM_PARAM_INFRASTRUCTURE: ${{ inputs.SSM_PARAM_INFRASTRUCTURE }}, SELLERS_DOMAIN_NAME: ${{ inputs.SELLERS_DOMAIN_NAME }}, BASE_PATH: ${{ inputs.BASE_PATH }}, ENVIRONMENT: ${{ inputs.ENVIRONMENT }}"
+        if [[ "${{ inputs.WHICH_INFRASTRUCTURE }}" == "A" ]]; then
+            echo "Deploying to A - Bottlers environment..."
+            
+        elif [[ "${{ inputs.WHICH_INFRASTRUCTURE }}" == "B" ]]; then
+            echo "Deploying to B - Sellers environment..."
+            
+        else
+            echo "Invalid Infrastructure selected"
+        fi
