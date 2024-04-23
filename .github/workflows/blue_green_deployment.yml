@@ -128,7 +128,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: prod
-    if: ( ${{ needs.selections.outputs.environment == 'prod' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} ) & () github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
+    if: ( ${{ needs.selections.outputs.environment == 'prod' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} ) && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
     steps:
       - uses: actions/checkout@v2
       - name: "Deploy"
