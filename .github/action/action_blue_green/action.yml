@@ -32,11 +32,6 @@ runs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ inputs.NODE_VERSION }}
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@master
-      with:
-        aws-region: ${{ inputs.AWS_REGION }}
-        role-to-assume: ${{ inputs.AWS_ROLE_ARN }}
     - name: Update alias and route traffic for ${{ inputs.ENVIRONMENT }}
       shell: bash
       run:  |
