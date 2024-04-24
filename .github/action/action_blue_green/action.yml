@@ -38,7 +38,7 @@ runs:
       run:  |
         rest_api_id='mi_valor_rest'
         echo "Setting up the env variable"
-        echo "REST_API_ID=hola_mundo" >> "$GITHUB_OUTPUT"
+        echo "REST_API_ID=$rest_api_id" >> "$GITHUB_OUTPUT"
     - name: Update alias and route traffic for ${{ inputs.ENVIRONMENT }}
       env:
         REST_API_ID: ${{ steps.set-env-variable.outputs.REST_API_ID }}
