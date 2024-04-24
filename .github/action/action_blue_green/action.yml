@@ -33,17 +33,19 @@ runs:
       with:
         node-version: ${{ inputs.NODE_VERSION }}
     - name: Setting up env variable
+      id: set-env-variable
       shell: bash
       run:  |
         rest_api_id='mi_valor_rest'
         echo "Setting up the env variable"
-        echo "export REST_API_ID=$rest_api_id" >> "$GITHUB_ENV"
+        echo "REST_API_ID=hola_mundo" >> "$GITHUB_OUTPUT"
     - name: Update alias and route traffic for ${{ inputs.ENVIRONMENT }}
+      env:
+        REST_API_ID: ${{ steps.set-env-variable.outputs.REST_API_ID }}
       shell: bash
       run:  |
         node --version
         echo "Valor 1 de variable $REST_API_ID"
-        echo "Valor 2 de variable ${{ env.REST_API_ID }}
         echo "values are region: ${{ inputs.AWS_REGION }}, which_infrastructure: ${{ inputs.WHICH_INFRASTRUCTURE }}, become_active: ${{ inputs.BECOME_ACTIVE }}, SSM_PARAM_INFRASTRUCTURE: ${{ inputs.SSM_PARAM_INFRASTRUCTURE }}, SELLERS_DOMAIN_NAME: ${{ inputs.SELLERS_DOMAIN_NAME }}, BASE_PATH: ${{ inputs.BASE_PATH }}, ENVIRONMENT: ${{ inputs.ENVIRONMENT }}"
         if [[ "${{ inputs.WHICH_INFRASTRUCTURE }}" == "A" ]]; then
             echo "Deploying to A - Bottlers environment..."
