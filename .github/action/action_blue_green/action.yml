@@ -35,7 +35,7 @@ runs:
     - name: Setting up env variable
       shell: bash
       run:  |
-        rest_api_id="mi_valor_rest"
+        rest_api_id='mi_valor_rest'
         echo "Setting up the env variable"
         echo "export REST_API_ID=$rest_api_id" >> $GITHUB_ENV 
     - name: Update alias and route traffic for ${{ inputs.ENVIRONMENT }}
