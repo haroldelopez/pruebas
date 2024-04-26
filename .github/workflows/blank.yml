@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync_release:
+  sync_branches_and_open_pr:
     runs-on: ubuntu-latest
 
     steps:
