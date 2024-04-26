@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync_branches_and_open_pr:
+  sync_branches:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,9 +19,10 @@ jobs:
         run: |
           git fetch
           git checkout release
-          git pull origin production --ff-only
+          git merge origin/production --no-ff --no-commit
           # Resolve any conflicts if necessary
           # git push origin release
+
 
           # Create a new branch with date
           sync_branch="sync-release-${{ steps.get_date.outputs.date }}"
