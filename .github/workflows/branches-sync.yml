@@ -17,6 +17,7 @@ jobs:
 
       - name: Sync Release from Production
         run: |
+          git fetch
           git checkout release
           git pull origin production
           # Resolve any conflicts if necessary
@@ -34,6 +35,7 @@ jobs:
 
       - name: Sync Staging from Release
         run: |
+          git fetch
           git checkout staging
           git pull origin release
           # Resolve any conflicts if necessary
@@ -51,6 +53,7 @@ jobs:
 
       - name: Sync Development from Staging
         run: |
+          git fetch
           git checkout development
           git pull origin staging
           # Resolve any conflicts if necessary
