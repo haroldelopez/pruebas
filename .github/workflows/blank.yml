@@ -1,0 +1,67 @@
+name:  Branches Sync
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get current date
+        id: get_date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Sync Release from Production
+        run: |
+          git checkout release
+          git pull origin production
+          # Resolve any conflicts if necessary
+          # git push origin release
+
+          # Create a new branch with date
+          sync_branch="sync-release-${{ steps.get_date.outputs.date }}"
+          git checkout -b $sync_branch
+
+          # Push changes to the new branch
+          git push origin $sync_branch
+
+          # Open a pull request
+          gh pr create --base release --head $sync_branch --title "Sync Release from Production" --body "Automated sync of release branch from production."
+
+      - name: Sync Staging from Release
+        run: |
+          git checkout staging
+          git pull origin release
+          # Resolve any conflicts if necessary
+          # git push origin staging
+
+          # Create a new branch with date
+          sync_branch="sync/staging-${{ steps.get_date.outputs.date }}"
+          git checkout -b $sync_branch
+
+          # Push changes to the new branch
+          git push origin $sync_branch
+
+          # Open a pull request
+          gh pr create --base staging --head $sync_branch --title "Sync Staging from Release" --body "Automated sync of staging branch from release."
+
+      - name: Sync Development from Staging
+        run: |
+          git checkout development
+          git pull origin staging
+          # Resolve any conflicts if necessary
+          # git push origin development
+
+          # Create a new branch with date
+          sync_branch="sync/development-${{ steps.get_date.outputs.date }}"
+          git checkout -b $sync_branch
+
+          # Push changes to the new branch
+          git push origin $sync_branch
+
+          # Open a pull request
+          gh pr create --base development --head $sync_branch --title "Sync Development from Staging" --body "Automated sync of development branch from staging."
