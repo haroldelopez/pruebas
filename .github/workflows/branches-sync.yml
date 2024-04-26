@@ -17,6 +17,8 @@ jobs:
 
       - name: Sync Release from Production
         run: |
+          git config --global user.email "me@gmaoil.com"
+          git config --global user.name "Automated sync"
           git fetch
           git checkout release
           git merge origin/production --no-ff --no-commit
