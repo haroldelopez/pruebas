@@ -19,7 +19,7 @@ jobs:
         run: |
           git fetch
           git checkout release
-          git pull origin production
+          git pull origin production --ff-only
           # Resolve any conflicts if necessary
           # git push origin release
 
@@ -37,7 +37,7 @@ jobs:
         run: |
           git fetch
           git checkout staging
-          git pull origin release
+          git pull origin release --ff-only
           # Resolve any conflicts if necessary
           # git push origin staging
 
@@ -55,7 +55,7 @@ jobs:
         run: |
           git fetch
           git checkout development
-          git pull origin staging
+          git pull origin staging --ff-only
           # Resolve any conflicts if necessary
           # git push origin development
 
