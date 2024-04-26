@@ -19,7 +19,7 @@ jobs:
         run: |
           git fetch
           # Open a pull request
-          gh pr create --base release --head $sync_branch --title "Sync Release from Production" --body "Automated sync of release branch from production."
+          gh pr create --base release --head production --title "Sync Release from Production" --body "Automated sync of release branch from production."
 
       - name: Sync Staging from Release
         run: |
