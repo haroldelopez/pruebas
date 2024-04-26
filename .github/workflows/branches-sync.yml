@@ -17,22 +17,7 @@ jobs:
 
       - name: Sync Release from Production
         run: |
-          git config --global user.email "me@gmaoil.com"
-          git config --global user.name "Automated sync"
           git fetch
-          git checkout release
-          git merge origin/production --no-ff --no-commit
-          # Resolve any conflicts if necessary
-          # git push origin release
-
-
-          # Create a new branch with date
-          sync_branch="sync-release-${{ steps.get_date.outputs.date }}"
-          git checkout -b $sync_branch
-
-          # Push changes to the new branch
-          git push origin $sync_branch
-
           # Open a pull request
           gh pr create --base release --head $sync_branch --title "Sync Release from Production" --body "Automated sync of release branch from production."
 
