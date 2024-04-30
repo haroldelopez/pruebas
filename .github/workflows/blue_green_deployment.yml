@@ -73,7 +73,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: stage
-    if: github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
+    if: ${{ github.event.inputs.environment == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
       - name: Echo Inputs
         id: echo-inputs3
