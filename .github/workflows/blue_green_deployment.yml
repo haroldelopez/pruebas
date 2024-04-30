@@ -46,6 +46,14 @@ jobs:
     environment: dev
     if: ${{ needs.selections.outputs.environment == 'dev' }} && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
     steps:
+      - name: Echo Inputs
+        id: echo-inputs2
+        shell: bash
+        run: |
+          echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
+          become_active ${{ github.event.inputs.become_active }} \
+          environment ${{ github.event.inputs.environment }} "
+
       - uses: actions/checkout@v2
       - name: "Deploy"
         uses: ./.github/action/action_blue_green
@@ -60,13 +68,21 @@ jobs:
           NODE_VERSION: ${{ env.NODE_VERSION }}
           ENVIRONMENT: dev
 
-  stage-deployment-A:
-    name: Blue-Green Deploy to Stage A infrastructure
+  stage-deployment:
+    name: Blue-Green Deploy to Stage infrastructure
     needs: selections
     runs-on: ubuntu-latest
     environment: stage
-    if: ( ${{ needs.selections.outputs.environment == 'stage' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} ) && ( github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
+    if: ${{ needs.selections.outputs.environment == 'stage' }} && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
     steps:
+      - name: Echo Inputs
+        id: echo-inputs3
+        shell: bash
+        run: |
+          echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
+          become_active ${{ github.event.inputs.become_active }} \
+          environment ${{ github.event.inputs.environment }} "
+          
       - uses: actions/checkout@v2
       - name: "Deploy"
         uses: ./.github/action/action_blue_green
