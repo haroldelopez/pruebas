@@ -18,8 +18,13 @@ on:
         default: false
       environment:
         description: "Environment to run deploy against"
-        type: environment
         required: true
+        default: "A"
+        type: choice
+        options:
+          - dev
+          - stage
+          - prod
 permissions:
   id-token: write
   contents: read
@@ -36,15 +41,15 @@ jobs:
       - name: Echo Inputs
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
-          become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          echo become_active ${{ github.event.inputs.become_active }} \
+          echo environment ${{ github.event.inputs.environment }} "
 
   dev-deployment:
     name: Blue-Green Deploy to Dev infrastructure
     needs: selections
     runs-on: ubuntu-latest
     environment: dev
-    if: ${{ github.event.inputs.environment == 'dev'}} && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
+    if: ${{ inputs.environment == 'dev'}} && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
       - name: Echo Inputs
         id: echo-inputs2
@@ -73,7 +78,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: stage
-    if: ${{ github.event.inputs.environment == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
+    if: ${{ inputs.environment == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
       - name: Echo Inputs
         id: echo-inputs3
@@ -102,7 +107,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: prod
-    if: ${{ needs.selections.outputs.environment == 'prod' }} && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
+    if:  ${{ inputs.environment == 'prod' }} && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
     steps:
       - name: Echo Inputs
         id: echo-inputs4
