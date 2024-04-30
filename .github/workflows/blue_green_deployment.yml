@@ -16,7 +16,7 @@ on:
         required: true
         type: boolean
         default: false
-      environment:
+      environment_b:
         description: "Environment to run deploy against"
         required: true
         default: "A"
@@ -36,20 +36,20 @@ jobs:
     outputs:
       which_infrastructure: ${{ github.event.inputs.which_infrastructure }}
       become_active: ${{ github.event.inputs.become_active }}
-      environment: ${{ github.event.inputs.environment }}
+      environment: ${{ github.event.inputs.environment_b }}
     steps:
       - name: Echo Inputs
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
           echo become_active ${{ github.event.inputs.become_active }} \
-          echo environment ${{ github.event.inputs.environment }} "
+          echo environment ${{ github.event.inputs.environment_b }} "
 
   dev-deployment:
     name: Blue-Green Deploy to Dev infrastructure
     needs: selections
     runs-on: ubuntu-latest
     environment: dev
-    if: ${{ inputs.environment == 'dev'}} && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
+    if: ${{ inputs.environment_b == 'dev'}} && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
       - name: Echo Inputs
         id: echo-inputs2
@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
           become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          environment ${{ github.event.inputs.environment_b }} "
 
       - uses: actions/checkout@v2
       - name: "Deploy"
@@ -78,7 +78,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: stage
-    if: ${{ inputs.environment == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
+    if: ${{ inputs.environment_b == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
       - name: Echo Inputs
         id: echo-inputs3
@@ -86,7 +86,7 @@ jobs:
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
           become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          environment ${{ github.event.inputs.environment_b }} "
           
       - uses: actions/checkout@v2
       - name: "Deploy"
@@ -107,7 +107,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: prod
-    if:  ${{ inputs.environment == 'prod' }} && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
+    if:  ${{ inputs.environment_b == 'prod' }} && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
     steps:
       - name: Echo Inputs
         id: echo-inputs4
@@ -115,7 +115,7 @@ jobs:
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
           become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          environment ${{ github.event.inputs.environment_b }} "
           
       - uses: actions/checkout@v2
       - name: "Deploy"
