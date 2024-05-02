@@ -16,15 +16,11 @@ on:
         required: true
         type: boolean
         default: false
-      environment_b:
+      environment:
         description: "Environment to run deploy against"
         required: true
-        default: 'dev'
-        type: choice
-        options:
-          - dev
-          - stage
-          - prod
+        type: environment
+    
 permissions:
   id-token: write
   contents: read
@@ -48,7 +44,8 @@ jobs:
     name: Blue-Green Deploy to Dev infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    if: ${{ inputs.environment_b == 'dev'}} && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
+    environment: dev
+    if: github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - name: Echo Inputs
         id: echo-inputs2
@@ -70,13 +67,14 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_DEV }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT:  ${{ inputs.environment_b }}
+          ENVIRONMENT: dev
 
   stage-deployment:
     name: Blue-Green Deploy to Stage infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    if: ${{ inputs.environment_b == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
+    environment: stage
+    if: github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - name: Echo Inputs
         id: echo-inputs3
@@ -98,13 +96,14 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: ${{ inputs.environment_b }}
+          ENVIRONMENT: stage
 
   prod-deployment:
     name: Blue-Green Deploy to Prod infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    if:  ${{ inputs.environment_b == 'prod' }} && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
+    environment: prod
+    if: github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/')
     steps:
       - name: Echo Inputs
         id: echo-inputs4
@@ -126,4 +125,4 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: ${{ inputs.environment_b }}
+          ENVIRONMENT: prod
