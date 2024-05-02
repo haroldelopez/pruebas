@@ -6,7 +6,7 @@ on:
       which_infrastructure:
         description: "Select the infrastructure to which this deploy will be sent. A: Bottlers B: Sellers"
         required: true
-        default: "A"
+        default: 'A'
         type: choice
         options:
           - A
@@ -19,12 +19,12 @@ on:
       environment_b:
         description: "Environment to run deploy against"
         required: true
-        default: "dev"
+        default: 'dev'
         type: choice
         options:
-          - "dev"
-          - "stage"
-          - "prod"
+          - dev
+          - stage
+          - prod
 permissions:
   id-token: write
   contents: read
