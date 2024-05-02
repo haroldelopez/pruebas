@@ -45,7 +45,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: dev
-    if: github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') || github.ref == 'refs/heads/master/'
+    if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - name: Echo Inputs
         id: echo-inputs2
@@ -74,7 +74,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: stage
-    if: github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') || github.ref == 'refs/heads/master/'
+    if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - name: Echo Inputs
         id: echo-inputs3
@@ -103,7 +103,7 @@ jobs:
     needs: selections
     runs-on: ubuntu-latest
     environment: prod
-    if: github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') || github.ref == 'refs/heads/master/'
+    if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/hotfix/') 
     steps:
       - name: Echo Inputs
         id: echo-inputs4
