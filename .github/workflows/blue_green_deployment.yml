@@ -19,7 +19,7 @@ on:
       environment_b:
         description: "Environment to run deploy against"
         required: true
-        default: "A"
+        default: "dev"
         type: choice
         options:
           - dev
@@ -48,7 +48,6 @@ jobs:
     name: Blue-Green Deploy to Dev infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: dev
     if: ${{ inputs.environment_b == 'dev'}} && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
       - name: Echo Inputs
@@ -77,7 +76,6 @@ jobs:
     name: Blue-Green Deploy to Stage infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: stage
     if: ${{ inputs.environment_b == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
       - name: Echo Inputs
@@ -106,7 +104,6 @@ jobs:
     name: Blue-Green Deploy to Prod infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: prod
     if:  ${{ inputs.environment_b == 'prod' }} && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
     steps:
       - name: Echo Inputs
