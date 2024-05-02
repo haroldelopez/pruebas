@@ -16,10 +16,15 @@ on:
         required: true
         type: boolean
         default: false
-      environment:
+      environment_b:
         description: "Environment to run deploy against"
-        type: environment
         required: true
+        default: "dev"
+        type: choice
+        options:
+          - "dev"
+          - "stage"
+          - "prod"
 permissions:
   id-token: write
   contents: read
@@ -31,21 +36,28 @@ jobs:
     outputs:
       which_infrastructure: ${{ github.event.inputs.which_infrastructure }}
       become_active: ${{ github.event.inputs.become_active }}
-      environment: ${{ github.event.inputs.environment }}
+      environment: ${{ github.event.inputs.environment_b }}
     steps:
       - name: Echo Inputs
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
-          become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          echo become_active ${{ github.event.inputs.become_active }} \
+          echo environment ${{ github.event.inputs.environment_b }} "
 
   dev-deployment:
     name: Blue-Green Deploy to Dev infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: dev
-    if: ${{ needs.selections.outputs.environment == 'dev' }} && ( github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
+    if: ${{ inputs.environment_b == 'dev'}} && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
+      - name: Echo Inputs
+        id: echo-inputs2
+        shell: bash
+        run: |
+          echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
+          become_active ${{ github.event.inputs.become_active }} \
+          environment ${{ github.event.inputs.environment_b }} "
+
       - uses: actions/checkout@v2
       - name: "Deploy"
         uses: ./.github/action/action_blue_green
@@ -58,15 +70,22 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_DEV }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: dev
+          ENVIRONMENT:  ${{ inputs.environment_b }}
 
-  stage-deployment-A:
-    name: Blue-Green Deploy to Stage A infrastructure
+  stage-deployment:
+    name: Blue-Green Deploy to Stage infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: stage
-    if: ( ${{ needs.selections.outputs.environment == 'stage' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} ) && ( github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
+    if: ${{ inputs.environment_b == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
     steps:
+      - name: Echo Inputs
+        id: echo-inputs3
+        shell: bash
+        run: |
+          echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
+          become_active ${{ github.event.inputs.become_active }} \
+          environment ${{ github.event.inputs.environment_b }} "
+          
       - uses: actions/checkout@v2
       - name: "Deploy"
         uses: ./.github/action/action_blue_green
@@ -79,36 +98,22 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: stage
+          ENVIRONMENT: ${{ inputs.environment_b }}
 
-  stage-deployment-B:
-    name: Blue-Green Deploy to Stage B infrastructure
+  prod-deployment:
+    name: Blue-Green Deploy to Prod infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: stage
-    if: ( ${{ needs.selections.outputs.environment == 'stage' }} && ${{ needs.selections.outputs.which_infrastructure == 'B' }} ) && ( github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') )
+    if:  ${{ inputs.environment_b == 'prod' }} && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
     steps:
-      - uses: actions/checkout@v2
-      - name: "Deploy"
-        uses: ./.github/action/action_blue_green
-        with:
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
-          BECOME_ACTIVE: ${{ inputs.become_active }}
-          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_STAGE_INFRA }}
-          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
-          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
-          NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: stage
-
-  prod-deployment-A:
-    name: Blue-Green Deploy to Prod A infrastructure
-    needs: selections
-    runs-on: ubuntu-latest
-    environment: prod
-    if: ( ${{ needs.selections.outputs.environment == 'prod' }} && ${{ needs.selections.outputs.which_infrastructure == 'A' }} ) && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
-    steps:
+      - name: Echo Inputs
+        id: echo-inputs4
+        shell: bash
+        run: |
+          echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
+          become_active ${{ github.event.inputs.become_active }} \
+          environment ${{ github.event.inputs.environment_b }} "
+          
       - uses: actions/checkout@v2
       - name: "Deploy"
         uses: ./.github/action/action_blue_green
@@ -121,25 +126,4 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: prod
-
-  prod-deployment-B:
-    name: Blue-Green Deploy to Prod B infrastructure
-    needs: selections
-    runs-on: ubuntu-latest
-    environment: prod
-    if: ( ${{ needs.selections.outputs.environment == 'prod' }} && ${{ needs.selections.outputs.which_infrastructure == 'B' }} ) && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
-    steps:
-      - uses: actions/checkout@v2
-      - name: "Deploy"
-        uses: ./.github/action/action_blue_green
-        with:
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
-          WHICH_INFRASTRUCTURE: ${{ inputs.which_infrastructure }}
-          BECOME_ACTIVE: ${{ inputs.become_active }}
-          SSM_PARAM_INFRASTRUCTURE: ${{ vars.SSM_PARAM_PROD_INFRA }}
-          SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
-          BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
-          NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: prod
+          ENVIRONMENT: ${{ inputs.environment_b }}
