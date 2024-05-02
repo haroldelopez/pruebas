@@ -44,7 +44,7 @@ jobs:
     name: Blue-Green Deploy to Dev infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: dev
+    environment: 'dev'
     if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - name: Echo Inputs
@@ -73,7 +73,7 @@ jobs:
     name: Blue-Green Deploy to Stage infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: stage
+    environment: 'stage'
     if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - name: Echo Inputs
@@ -102,7 +102,7 @@ jobs:
     name: Blue-Green Deploy to Prod infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: prod
+    environment: 'prod'
     if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/hotfix/') 
     steps:
       - name: Echo Inputs
