@@ -22,9 +22,9 @@ on:
         default: "dev"
         type: choice
         options:
-          - dev
-          - stage
-          - prod
+          - "dev"
+          - "stage"
+          - "prod"
 permissions:
   id-token: write
   contents: read
@@ -70,7 +70,7 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_DEV }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: dev
+          ENVIRONMENT:  ${{ inputs.environment_b }}
 
   stage-deployment:
     name: Blue-Green Deploy to Stage infrastructure
@@ -98,7 +98,7 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: stage
+          ENVIRONMENT: ${{ inputs.environment_b }}
 
   prod-deployment:
     name: Blue-Green Deploy to Prod infrastructure
@@ -126,4 +126,4 @@ jobs:
           SELLERS_DOMAIN_NAME: ${{ vars.DOMAIN_NAME_STAGE }}
           BASE_PATH: ${{ vars.SELLERS_BASE_PATH }}
           NODE_VERSION: ${{ env.NODE_VERSION }}
-          ENVIRONMENT: prod
+          ENVIRONMENT: ${{ inputs.environment_b }}
