@@ -41,13 +41,11 @@ jobs:
       matrix:
         node-version: [14.x]
     steps:
-      - name: Step 1
-        run: sls config credentials --provider aws --key ${{ env.AWS_ACCESS_KEY_ID }} --secret ${{ env.AWS_SECRET_ACCESS_KEY }}
-      - name: Step 2 Deploy ${{ format('{0}_{1}', env.APP_NAME , env.STAGE) }} to ${{ env.AWS_REGION }}
+      - name: Step 1 Deploy ${{ format('{0}_{1}', env.APP_NAME , env.STAGE) }} to ${{ env.AWS_REGION }}
         if: github.event.inputs.stage == 'stage' && github.event.inputs.which_environment == 'A'
         run: |
           echo "You selected stage stage and environment A"
-      - name: Deploy ${{ format('{0}_{1}', env.APP_NAME_B , env.STAGE) }} to ${{ env.AWS_REGION }}
+      - name: Step 2 Deploy ${{ format('{0}_{1}', env.APP_NAME_B , env.STAGE) }} to ${{ env.AWS_REGION }}
         if: github.event.inputs.stage == 'stage' && github.event.inputs.which_environment == 'B'
         run: |
           echo "You selected stage stage and environment B"
