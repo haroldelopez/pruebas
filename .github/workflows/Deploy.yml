@@ -44,7 +44,7 @@ jobs:
       - name: Step 0 Verify variables
         if: github.event.inputs.stage == 'dev'
         run: |
-          echo "APP_NAME=Hola_mundo!" >> "$GITHUB_OUTPUT"
+          echo "APP_NAME=Hola_mundo!" >> "$GITHUB_ENV"
       - name: Step 1 Deploy ${{ format('{0}_{1}', env.APP_NAME , env.STAGE) }} to ${{ env.AWS_REGION }}
         if: github.event.inputs.stage == 'stage' && github.event.inputs.which_environment == 'A'
         run: |
