@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/haroldelopez/pruebas/compare/v1.0.0...v1.1.0) (2024-05-17)
+
+
+### Features
+
+* new feature added to read messages ([6dc623a](https://github.com/haroldelopez/pruebas/commit/6dc623a73f0000dec5e495ba81fedeb2cce92c26))
+
 ## 1.0.0 (2024-05-17)
 
 
