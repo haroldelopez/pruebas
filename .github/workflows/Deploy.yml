@@ -1,0 +1,64 @@
+name: Deploy app
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      which_environment:
+        type: choice
+        description: Which environment do you want to deploy? A or B (Active - Inactive)
+        default: A
+        options:
+          - A
+          - B
+        required: true
+      stage:
+        type: choice
+        description: Which app do you want to deploy
+        options:
+          - stage
+          - dev
+        required: true
+      region:
+        description: Region to deploy
+        required: true
+        default: 'us-east-1'
+permissions:
+  id-token: write
+  contents: read
+env:
+  STAGE: ${{ github.event.inputs.stage || 'stage' }}
+  AWS_REGION: ${{ github.event.inputs.region || 'us-east-2' }}
+  # it could be passed as parameter
+  APP_NAME: app1
+  APP_NAME_B: app2
+jobs:
+  deployment:
+    name: Deploy app-integration ${{ github.event.inputs.stage }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - name: Step 0 Verify variables
+        if: github.event.inputs.stage == 'dev'
+        run: |
+          echo "APP_NAME=Hola_mundo!" >> "$GITHUB_ENV"
+      - name: Step 1 Deploy ${{ format('{0}_{1}', env.APP_NAME , env.STAGE) }} to ${{ env.AWS_REGION }}
+        if: github.event.inputs.stage == 'stage' && github.event.inputs.which_environment == 'A'
+        run: |
+          echo "You selected stage stage and environment A"
+      - name: Step 2 Deploy ${{ format('{0}_{1}', env.APP_NAME_B , env.STAGE) }} to ${{ env.AWS_REGION }}
+        if: github.event.inputs.stage == 'stage' && github.event.inputs.which_environment == 'B'
+        run: |
+          echo "You selected stage stage and environment B"
+      - name: Step 2 Deploy ${{ format('{0}_{1}', env.APP_NAME_B , env.STAGE) }} to ${{ env.AWS_REGION }}
+        if: github.event.inputs.stage == 'dev' && github.event.inputs.which_environment == 'A'
+        run: |
+          echo "You selected stage dev and environment A"
+      - name: Step 2 Deploy ${{ format('{0}_{1}', env.APP_NAME_B , env.STAGE) }} to ${{ env.AWS_REGION }}
+        if: github.event.inputs.stage == 'dev' && github.event.inputs.which_environment == 'B'
+        run: |
+          export APP_NAME=$APP_NAME_B
+          echo "You selected stage dev and environment B . VALOR ES $APP_NAME y la otra es ${{ format('{0}', env.APP_NAME_B) }}"

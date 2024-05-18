@@ -45,7 +45,7 @@ runs:
       shell: bash
       run:  |
         node --version
-        echo "Valor 1 de variable $REST_API_ID"
+        echo "Valor 1 de vambiente es ariable $REST_API_ID"
         echo "values are region: ${{ inputs.AWS_REGION }}, which_infrastructure: ${{ inputs.WHICH_INFRASTRUCTURE }}, become_active: ${{ inputs.BECOME_ACTIVE }}, SSM_PARAM_INFRASTRUCTURE: ${{ inputs.SSM_PARAM_INFRASTRUCTURE }}, SELLERS_DOMAIN_NAME: ${{ inputs.SELLERS_DOMAIN_NAME }}, BASE_PATH: ${{ inputs.BASE_PATH }}, ENVIRONMENT: ${{ inputs.ENVIRONMENT }}"
         if [[ "${{ inputs.WHICH_INFRASTRUCTURE }}" == "A" ]]; then
             echo "Deploying to A - Bottlers environment..."

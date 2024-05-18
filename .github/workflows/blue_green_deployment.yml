@@ -6,7 +6,7 @@ on:
       which_infrastructure:
         description: "Select the infrastructure to which this deploy will be sent. A: Bottlers B: Sellers"
         required: true
-        default: "A"
+        default: 'A'
         type: choice
         options:
           - A
@@ -18,8 +18,9 @@ on:
         default: false
       environment:
         description: "Environment to run deploy against"
-        type: environment
         required: true
+        type: environment
+    
 permissions:
   id-token: write
   contents: read
@@ -31,20 +32,20 @@ jobs:
     outputs:
       which_infrastructure: ${{ github.event.inputs.which_infrastructure }}
       become_active: ${{ github.event.inputs.become_active }}
-      environment: ${{ github.event.inputs.environment }}
+      environment: ${{ github.event.inputs.environment_b }}
     steps:
       - name: Echo Inputs
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
-          become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          echo become_active ${{ github.event.inputs.become_active }} \
+          echo environment ${{ github.event.inputs.environment_b }} "
 
   dev-deployment:
     name: Blue-Green Deploy to Dev infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: dev
-    if: ${{ github.event.inputs.environment == 'dev'}} && (github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
+    environment: 'dev'
+    if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - name: Echo Inputs
         id: echo-inputs2
@@ -52,7 +53,7 @@ jobs:
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
           become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          environment ${{ github.event.inputs.environment_b }} "
 
       - uses: actions/checkout@v2
       - name: "Deploy"
@@ -72,8 +73,8 @@ jobs:
     name: Blue-Green Deploy to Stage infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: stage
-    if: ${{ github.event.inputs.environment == 'stage' }} && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/'))
+    environment: 'stage'
+    if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/')
     steps:
       - name: Echo Inputs
         id: echo-inputs3
@@ -81,7 +82,7 @@ jobs:
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
           become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          environment ${{ github.event.inputs.environment_b }} "
           
       - uses: actions/checkout@v2
       - name: "Deploy"
@@ -101,8 +102,8 @@ jobs:
     name: Blue-Green Deploy to Prod infrastructure
     needs: selections
     runs-on: ubuntu-latest
-    environment: prod
-    if: ${{ needs.selections.outputs.environment == 'prod' }} && ( github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix/') )
+    environment: 'prod'
+    if: github.ref == 'refs/heads/master/' || startsWith(github.ref, 'refs/heads/hotfix/') 
     steps:
       - name: Echo Inputs
         id: echo-inputs4
@@ -110,7 +111,7 @@ jobs:
         run: |
           echo "Inputs  which_infrastructure ${{ github.event.inputs.which_infrastructure }} \
           become_active ${{ github.event.inputs.become_active }} \
-          environment ${{ github.event.inputs.environment }} "
+          environment ${{ github.event.inputs.environment_b }} "
           
       - uses: actions/checkout@v2
       - name: "Deploy"
