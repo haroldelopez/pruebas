@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/haroldelopez/pruebas/compare/v1.2.0...v1.2.1) (2024-05-20)
+
+
+### Bug Fixes
+
+* changed branch ([08e402e](https://github.com/haroldelopez/pruebas/commit/08e402e77665f48daeacd201bdaff25ce166658b))
+
 ## [1.2.0](https://github.com/haroldelopez/pruebas/compare/v1.1.0...v1.2.0) (2024-05-20)
 
 
