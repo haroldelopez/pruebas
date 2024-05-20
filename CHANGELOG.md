@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/haroldelopez/pruebas/compare/v1.1.0...v1.2.0) (2024-05-20)
+
+
+### Features
+
+* creación de un nuevo archivo ([9d4f476](https://github.com/haroldelopez/pruebas/commit/9d4f4762876f67a56ec5549d07422538ffaaec62))
+
 ## [1.1.0](https://github.com/haroldelopez/pruebas/compare/v1.0.0...v1.1.0) (2024-05-17)
 
 
